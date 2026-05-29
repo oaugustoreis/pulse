@@ -1,0 +1,9 @@
+node_modules/
+.env
+pulse/dist/
+dist-desktop/
+summary.html
+*.log
+src/generated-env.ts
+src/virtual-registry.ts
+.antigravitycli/

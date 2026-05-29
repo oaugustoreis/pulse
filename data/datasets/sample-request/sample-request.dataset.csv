@@ -1,0 +1,5 @@
+id,name,cpf,email,createdAt
+1,Augusto Silva,11122233344,augusto@example.com,2026-05-29T10:00:00Z
+2,Beatriz Santos,22233344455,beatriz@example.com,2026-05-29T10:00:00Z
+3,Carlos Oliveira,33344455566,carlos@example.com,2026-05-29T10:00:00Z
+4,Daniela Souza,44455566677,daniela@example.com,2026-05-29T10:00:00Z

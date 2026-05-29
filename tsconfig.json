@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@pulse/core": ["pulse/core/pulse"],
+      "@pulse/http": ["pulse/http/http"],
+      "@pulse/config": ["pulse/config/config-resolver"],
+      "@pulse/*": ["pulse/*"],
+      "@src/*": ["src/*"],
+      "@data/*": ["data/*"],
+      "@config/*": ["config/*"]
+    },
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "pulse/dist",
+    "rootDir": "."
+  },
+  "include": ["src/**/*", "pulse/**/*", "config/**/*", "data/**/*"],
+  "exclude": ["node_modules", "pulse/dist"]
+}

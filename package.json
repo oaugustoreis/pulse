@@ -1,0 +1,73 @@
+{
+  "name": "pulse-framework",
+  "version": "1.0.0",
+  "description": "Pulse: A modular and scalable k6 load testing framework",
+  "main": "cli.js",
+  "bin": {
+    "ps": "./cli.js",
+    "pulse": "./cli.js"
+  },
+  "scripts": {
+    "postinstall": "node cli.js init",
+    "ps": "node cli.js",
+    "pulse": "node cli.js",
+    "mock-server": "node data/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "load": "npm run ps -- run",
+    "gen": "npm run ps -- gen",
+    "add-env": "npm run ps -- add-env",
+    "gui": "electron desktop/main.js",
+    "build-desktop": "electron-builder"
+  },
+  "build": {
+    "appId": "com.pulse.cockpit",
+    "productName": "Pulse Cockpit",
+    "directories": {
+      "output": "dist-desktop"
+    },
+    "files": [
+      "desktop/**/*",
+      "cli.js",
+      "package.json",
+      "src/**/*",
+      "config/**/*",
+      "pulse/**/*",
+      "data/**/*",
+      "scripts/**/*"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/k6": "^2.0.0",
+    "@types/node": "^25.9.1",
+    "dotenv-cli": "^11.0.0",
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1",
+    "esbuild": "^0.28.0",
+    "glob": "^13.0.6",
+    "json-server": "^0.17.4",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^14.0.3",
+    "dotenv": "^17.4.2",
+    "xlsx": "^0.18.5"
+  }
+}

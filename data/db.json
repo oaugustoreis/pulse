@@ -1,0 +1,317 @@
+{
+  "sample": [
+    {
+      "id": 1,
+      "name": "Initial Sample Data",
+      "status": "active"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Gabriel Silva Santos",
+      "cpf": "12345678909",
+      "source": "bootstrap"
+    },
+    {
+      "name": "Julia Silva Ferreira",
+      "cpf": "68656072013",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:22:10.507Z",
+      "id": 2
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 3
+    },
+    {
+      "name": "Beatriz Ferreira Pereira",
+      "cpf": "62416039903",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:29:28.848Z",
+      "id": 4
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 5
+    },
+    {
+      "name": "Eduardo Rodrigues Oliveira",
+      "cpf": "83424272426",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:30:50.928Z",
+      "id": 6
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 7
+    },
+    {
+      "name": "Carlos Santos Santos",
+      "cpf": "48326578797",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:33:59.095Z",
+      "id": 8
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 9
+    },
+    {
+      "name": "Beatriz Santos Gomes",
+      "cpf": "05773286629",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:36:39.985Z",
+      "id": 10
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 11
+    },
+    {
+      "name": "Gabriel Rodrigues Silva",
+      "cpf": "15841849140",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:46:56.013Z",
+      "id": 12
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 13
+    },
+    {
+      "name": "Beatriz Gomes Souza",
+      "cpf": "22574156129",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:55:00.932Z",
+      "id": 14
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 15
+    },
+    {
+      "name": "Augusto Souza Oliveira",
+      "cpf": "11088251331",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:55:31.168Z",
+      "id": 16
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 17
+    },
+    {
+      "name": "Gabriel Oliveira Pereira",
+      "cpf": "24015864581",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:55:54.410Z",
+      "id": 18
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 19
+    },
+    {
+      "name": "Augusto Ferreira Santos",
+      "cpf": "30074531190",
+      "source": "generator",
+      "createdAt": "2026-05-29T19:58:44.430Z",
+      "id": 20
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 21
+    },
+    {
+      "name": "Eduardo Rodrigues Silva",
+      "cpf": "31899410414",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:01:18.621Z",
+      "id": 22
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 23
+    },
+    {
+      "name": "Fernanda Ferreira Ferreira",
+      "cpf": "57607007156",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:03:03.873Z",
+      "id": 24
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 25
+    },
+    {
+      "name": "Gabriel Ferreira Silva",
+      "cpf": "54482751766",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:06:55.969Z",
+      "id": 26
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 27
+    },
+    {
+      "name": "Carlos Oliveira Pereira",
+      "cpf": "86971716795",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:08:03.504Z",
+      "id": 28
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 29
+    },
+    {
+      "name": "Beatriz Pereira Silva",
+      "cpf": "47768815602",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:10:40.410Z",
+      "id": 30
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 31
+    },
+    {
+      "name": "Fernanda Oliveira Silva",
+      "cpf": "44430850844",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:11:17.321Z",
+      "id": 32
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 33
+    },
+    {
+      "name": "Daniela Pereira Silva",
+      "cpf": "72598963539",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:13:39.955Z",
+      "id": 34
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 35
+    },
+    {
+      "name": "Gabriel Ferreira Rodrigues",
+      "cpf": "40517668530",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:15:39.810Z",
+      "id": 36
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 37
+    },
+    {
+      "name": "Carlos Ferreira Pereira",
+      "cpf": "36856181809",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:18:05.699Z",
+      "id": 38
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 39
+    },
+    {
+      "name": "Eduardo Rodrigues Ferreira",
+      "cpf": "12342082614",
+      "source": "generator",
+      "createdAt": "2026-05-29T20:26:52.183Z",
+      "id": 40
+    },
+    {
+      "name": "Augusto Silva",
+      "cpf": "11122233344",
+      "email": "augusto@example.com",
+      "createdAt": "2026-05-29T10:00:00Z",
+      "source": "dataset",
+      "id": 41
+    }
+  ]
+}
