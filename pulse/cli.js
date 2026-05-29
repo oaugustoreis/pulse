@@ -5,7 +5,7 @@ const chalk = require("chalk");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
-const packageJson = require("./package.json");
+const packageJson = require("../package.json");
 
 if (fs.existsSync(".env")) {
     require("dotenv").config({ quiet: true });
@@ -14,7 +14,7 @@ if (fs.existsSync(".env")) {
 const program = new Command();
 
 program
-    .name("ps")
+    .name("pulse")
     .description("Pulse: Modular Load Testing Framework powered by k6")
     .version(packageJson.version)
     .addHelpText(
@@ -45,6 +45,7 @@ program
 
         if (!finalScenario) {
             console.error(chalk.red.bold("\n✖ Error: Scenario not provided."));
+            console.error(chalk.red.bold("\n✖ Note: You need to create a .env file before running the application."));
             console.log(
                 chalk.yellow(
                     "Example: node cli.js run sample_request_smoke_test dev",
@@ -93,7 +94,6 @@ program
         if (extraArgs) k6Args += ` ${extraArgs}`;
 
         const k6Command = `k6 run --log-format raw ${envVars}${k6Args} pulse/dist/main.js`;
-        console.log(`\n${chalk.yellow("Command")}    ${chalk.gray(k6Command)}`);
         console.log(
             chalk.blue.bold(
                 "\n═══════════════════════════════════════════════════════\n",
@@ -122,40 +122,61 @@ program
 
 program
     .command("init")
-    .description("Initialize the framework workspace directories")
+    .description("Initialize the framework workspace directories and template files")
     .action(() => {
         console.log(chalk.green.bold("\nInitializing Pulse Workspace..."));
-        const dirs = [
+        
+        const packageRoot = path.join(__dirname, "..");
+        const itemsToCopy = [
             "config",
-            "data/datasets",
-            "data/generators",
-            "data/payloads",
-            "desktop/src",
-            "pulse/auth",
-            "pulse/config",
-            "pulse/core",
-            "pulse/data",
-            "pulse/http",
-            "pulse/logger",
-            "pulse/parsers/time-parser",
-            "pulse/plugins",
-            "pulse/reporter",
+            "data",
+            "pulse",
             "scripts",
-            "src/flows",
-            "src/profiles",
-            "src/scenarios",
-            "src/use-cases",
+            "src",
+            "tsconfig.json",
+            ".env.example"
         ];
 
-        dirs.forEach((d) => {
-            if (!fs.existsSync(d)) {
-                fs.mkdirSync(d, { recursive: true });
-                console.log(chalk.gray(`Created folder: ${d}`));
+        function copyRecursiveSync(src, dest) {
+            const exists = fs.existsSync(src);
+            const stats = exists && fs.statSync(src);
+            const isDirectory = exists && stats.isDirectory();
+            if (isDirectory) {
+                if (!fs.existsSync(dest)) {
+                    fs.mkdirSync(dest, { recursive: true });
+                }
+                fs.readdirSync(src).forEach((childItemName) => {
+                    copyRecursiveSync(
+                        path.join(src, childItemName),
+                        path.join(dest, childItemName)
+                    );
+                });
+            } else {
+                if (!fs.existsSync(dest)) {
+                    fs.copyFileSync(src, dest);
+                    console.log(chalk.gray(`Created: ${path.relative(process.cwd(), dest)}`));
+                }
+            }
+        }
+
+        itemsToCopy.forEach((item) => {
+            const srcPath = path.join(packageRoot, item);
+            const destPath = path.join(process.cwd(), item);
+            if (fs.existsSync(srcPath)) {
+                copyRecursiveSync(srcPath, destPath);
             }
         });
+
+        const templatePkgPath = path.join(packageRoot, "template.package.json");
+        const destPkgPath = path.join(process.cwd(), "package.json");
+        if (fs.existsSync(templatePkgPath) && !fs.existsSync(destPkgPath)) {
+            fs.copyFileSync(templatePkgPath, destPkgPath);
+            console.log(chalk.gray("Created: package.json"));
+        }
+
         console.log(
             chalk.green.bold(
-                "✔ Workspace directory tree initialized successfully!",
+                "\n✔ Workspace directory tree and template files initialized successfully!",
             ),
         );
     });
@@ -293,6 +314,46 @@ program
         console.log(
             chalk.green.bold(`✔ Env var ${key} updated successfully in .env!`),
         );
+    });
+
+function launchGui() {
+    console.log(chalk.green.bold("\nLaunching Pulse Cockpit Desktop..."));
+    const desktopPath = "pulse/desktop/main.js";
+    if (!fs.existsSync(desktopPath)) {
+        console.error(
+            chalk.red.bold(
+                `\n✖ Error: Desktop entrypoint not found at ${desktopPath}.\nMake sure you run this command inside an initialized Pulse workspace.`
+            )
+        );
+        process.exit(1);
+    }
+
+    try {
+        execSync("npx electron pulse/desktop/main.js", { stdio: "inherit" });
+    } catch (error) {
+        console.error(chalk.red.bold("\n✖ Failed to launch desktop GUI."));
+        process.exit(1);
+    }
+}
+
+program
+    .command("gui")
+    .description("Launch the Pulse Cockpit Desktop Dashboard")
+    .action(() => {
+        launchGui();
+    });
+
+program
+    .command("open")
+    .description("Open framework components (e.g. 'gui')")
+    .argument("<component>", "Component to open ('gui')")
+    .action((component) => {
+        if (component === "gui") {
+            launchGui();
+        } else {
+            console.error(chalk.red.bold(`\n✖ Unknown component: ${component}`));
+            process.exit(1);
+        }
     });
 
 program.parse(process.argv);

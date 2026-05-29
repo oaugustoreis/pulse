@@ -35,7 +35,6 @@ body {
     position: relative;
 }
 
-/* Background Glowing Orbs */
 .glow-orb {
     position: absolute;
     border-radius: 50%;
@@ -70,7 +69,6 @@ body {
     background: rgba(99, 102, 241, 0.08);
 }
 
-/* Grid Layout container */
 .cockpit-container {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -80,7 +78,6 @@ body {
     z-index: 1;
 }
 
-/* Sidebar Navigation */
 .cockpit-sidebar {
     background: var(--sidebar-bg);
     border-right: 1px solid var(--card-border);
@@ -220,7 +217,6 @@ body {
     margin-top: auto;
 }
 
-/* Main Workspace Area */
 .cockpit-main {
     padding: 2.25rem 2.5rem;
     overflow-y: auto;
@@ -237,8 +233,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .header-banner {
@@ -260,7 +263,6 @@ body {
     font-size: 0.95rem;
 }
 
-/* Glassmorphism Cards */
 .glass-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -289,14 +291,12 @@ body {
     border-radius: 2px;
 }
 
-/* Control Room Grid */
 .control-grid {
     display: grid;
     grid-template-columns: 1.3fr 1fr;
     gap: 1.75rem;
 }
 
-/* Form Styles */
 .form-group {
     margin-bottom: 1.25rem;
 }
@@ -338,12 +338,12 @@ input:focus {
 
 select {
     width: 100%;
-    background: rgba(20, 27, 50, 0.5); /* Semi-transparent dark slate */
+    background: rgba(20, 27, 50, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px; /* Smoother premium rounded corners */
+    border-radius: 12px;
     color: var(--text-main);
     font-family: var(--font-sans);
-    padding: 0.85rem 1.25rem; /* Spacious padding */
+    padding: 0.85rem 1.25rem;
     font-size: 0.9rem;
     outline: none;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -362,9 +362,9 @@ select {
 
 select:hover {
     background-color: rgba(20, 27, 50, 0.7);
-    border-color: rgba(129, 140, 248, 0.4); /* Glowing hover border */
+    border-color: rgba(129, 140, 248, 0.4);
     box-shadow: 0 4px 20px rgba(92, 84, 236, 0.08);
-    transform: translateY(-1px); /* Micro-elevation hover effect */
+    transform: translateY(-1px);
 }
 
 select:focus {
@@ -383,7 +383,7 @@ select option {
 
 select optgroup {
     background-color: #0a0d18;
-    color: #818cf8; /* Premium indigo category subheader */
+    color: #818cf8;
     font-weight: 700;
     font-size: 0.75rem;
     letter-spacing: 0.75px;
@@ -400,7 +400,6 @@ select optgroup option {
     background-color: #0b0f19;
 }
 
-/* Environment Target URL Preview Card */
 .env-preview-card {
     background: rgba(92, 84, 236, 0.03);
     border: 1px dashed rgba(92, 84, 236, 0.25);
@@ -442,11 +441,17 @@ select optgroup option {
 }
 
 @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 5px rgba(92, 84, 236, 0.01); }
-    50% { box-shadow: 0 0 12px rgba(92, 84, 236, 0.05); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(92, 84, 236, 0.01);
+    }
+
+    50% {
+        box-shadow: 0 0 12px rgba(92, 84, 236, 0.05);
+    }
 }
 
-/* Buttons */
 .btn {
     font-family: var(--font-sans);
     font-size: 0.9rem;
@@ -513,7 +518,6 @@ select optgroup option {
     display: none !important;
 }
 
-/* Test Status Panel Styles */
 .status-panel {
     display: flex;
     flex-direction: column;
@@ -547,8 +551,13 @@ select optgroup option {
 }
 
 @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .indicator-inner {
@@ -609,7 +618,6 @@ select optgroup option {
     transition: width 0.4s ease;
 }
 
-/* Console Logs Grid */
 .logs-grid {
     display: grid;
     grid-template-rows: 1fr 1fr;
@@ -641,7 +649,6 @@ select optgroup option {
     text-transform: uppercase;
 }
 
-/* Terminal Search Box and Navigation UI */
 .terminal-search-box {
     display: flex;
     align-items: center;
@@ -671,7 +678,7 @@ select optgroup option {
 }
 
 .terminal-search-box input:focus {
-    width: 150px; /* Expands on focus */
+    width: 150px;
     box-shadow: none;
 }
 
@@ -703,7 +710,6 @@ select optgroup option {
     color: var(--text-main);
 }
 
-/* Log Highlight Styles */
 .log-highlight {
     background-color: rgba(234, 179, 8, 0.25);
     border-radius: 2px;
@@ -731,10 +737,9 @@ select optgroup option {
     white-space: pre-wrap;
     word-break: break-all;
     position: relative;
-    max-height: calc(50vh - 140px); /* Strictly bounds terminal height so they never stretch the page */
+    max-height: calc(50vh - 140px);
 }
 
-/* Gorgeous custom scrollbar for terminal panels */
 .terminal::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -746,17 +751,16 @@ select optgroup option {
 }
 
 .terminal::-webkit-scrollbar-thumb {
-    background: rgba(92, 84, 236, 0.3); /* Premium indigo semi-transparent thumb */
+    background: rgba(92, 84, 236, 0.3);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.02);
     transition: var(--transition);
 }
 
 .terminal::-webkit-scrollbar-thumb:hover {
-    background: rgba(92, 84, 236, 0.6); /* Brighter glowing effect on hover */
+    background: rgba(92, 84, 236, 0.6);
 }
 
-/* Report View */
 .report-header {
     display: flex;
     justify-content: space-between;
@@ -809,7 +813,6 @@ iframe {
     font-size: 0.9rem;
 }
 
-/* Environment Vault Panel */
 .env-panel {
     overflow-y: auto;
 }
@@ -853,7 +856,6 @@ iframe {
     background: rgba(255, 255, 255, 0.02);
 }
 
-/* Env Vault Value Toggle Wrapper */
 .env-value-wrapper {
     position: relative;
     display: flex;
@@ -862,7 +864,7 @@ iframe {
 }
 
 .env-value-wrapper .env-input-val {
-    padding-right: 2.75rem; /* Make room for the eye button */
+    padding-right: 2.75rem;
 }
 
 .btn-toggle-val {
@@ -890,7 +892,6 @@ iframe {
     display: none !important;
 }
 
-/* Mock Server Controls */
 .mock-control-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

@@ -1,0 +1,27 @@
+{
+  "name": "pulse-workspace",
+  "version": "1.0.0",
+  "description": "Pulse performance testing workspace",
+  "private": true,
+  "scripts": {
+    "pulse": "pulse",
+    "gui": "pulse open gui"
+  },
+  "devDependencies": {
+    "@types/k6": "^2.0.0",
+    "@types/node": "^25.9.1",
+    "dotenv-cli": "^11.0.0",
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1",
+    "esbuild": "^0.28.0",
+    "glob": "^13.0.6",
+    "json-server": "^0.17.4",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^14.0.3",
+    "dotenv": "^17.4.2",
+    "xlsx": "^0.18.5"
+  }
+}

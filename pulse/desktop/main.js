@@ -31,7 +31,7 @@ function createWindow() {
 }
 
  ipcMain.handle("get-scenarios", async () => {
-    const profilesDir = path.join(__dirname, "../src/profiles");
+    const profilesDir = path.join(__dirname, "../../src/profiles");
     const scenarios = [];
     if (!fs.existsSync(profilesDir)) return scenarios;
 
@@ -72,7 +72,7 @@ function createWindow() {
 });
 
  ipcMain.handle("get-env-config", async () => {
-    const envPath = path.join(__dirname, "../.env");
+    const envPath = path.join(__dirname, "../../.env");
     if (!fs.existsSync(envPath)) return {};
 
     const config = {};
@@ -94,7 +94,7 @@ function createWindow() {
 });
 
 ipcMain.handle("save-env-config", async (event, config) => {
-    const envPath = path.join(__dirname, "../.env");
+    const envPath = path.join(__dirname, "../../.env");
     try {
         let content = "";
         Object.keys(config).forEach((key) => {
@@ -112,7 +112,7 @@ ipcMain.handle("save-env-config", async (event, config) => {
         return { success: false, error: "A test is already running." };
     }
 
-    const args = ["cli.js", "run", scenario, env];
+    const args = ["pulse/cli.js", "run", scenario, env];
     if (vus) {
         args.push("-v", vus);
     }
@@ -122,7 +122,7 @@ ipcMain.handle("save-env-config", async (event, config) => {
 
     try {
         activeTestProcess = spawn("node", args, {
-            cwd: path.join(__dirname, ".."),
+            cwd: path.join(__dirname, "../.."),
             env: { ...process.env, ENV: env, SCENARIO: scenario },
         });
 
@@ -176,7 +176,7 @@ ipcMain.handle("kill-test", async () => {
 
     try {
         activeMockProcess = spawn("node", ["data/server.js"], {
-            cwd: path.join(__dirname, ".."),
+            cwd: path.join(__dirname, "../.."),
         });
 
         activeMockProcess.stdout.on("data", (data) => {
@@ -219,7 +219,7 @@ ipcMain.handle("get-mock-status", async () => {
 });
 
  ipcMain.handle("get-report", async () => {
-    const reportPath = path.join(__dirname, "../summary.html");
+    const reportPath = path.join(__dirname, "../../summary.html");
     if (fs.existsSync(reportPath)) {
         return fs.readFileSync(reportPath, "utf8");
     }

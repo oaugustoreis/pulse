@@ -1,22 +1,20 @@
 {
-  "name": "pulse-framework",
-  "version": "1.0.0",
+  "name": "pulse-arch",
+  "version": "1.0.10",
   "description": "Pulse: A modular and scalable k6 load testing framework",
-  "main": "cli.js",
+  "main": "pulse/cli.js",
   "bin": {
-    "ps": "./cli.js",
-    "pulse": "./cli.js"
+    "pulse": "./pulse/cli.js"
   },
   "scripts": {
-    "postinstall": "node cli.js init",
-    "ps": "node cli.js",
-    "pulse": "node cli.js",
+    "postinstall": "node pulse/cli.js init",
+    "pulse": "node pulse/cli.js",
     "mock-server": "node data/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "load": "npm run ps -- run",
-    "gen": "npm run ps -- gen",
-    "add-env": "npm run ps -- add-env",
-    "gui": "electron desktop/main.js",
+    "load": "npm run pulse -- run",
+    "gen": "npm run pulse -- gen",
+    "add-env": "npm run pulse -- add-env",
+    "gui": "electron pulse/desktop/main.js",
     "build-desktop": "electron-builder"
   },
   "build": {
@@ -26,8 +24,8 @@
       "output": "dist-desktop"
     },
     "files": [
-      "desktop/**/*",
-      "cli.js",
+      "pulse/desktop/**/*",
+      "pulse/cli.js",
       "package.json",
       "src/**/*",
       "config/**/*",
@@ -53,6 +51,16 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "files": [
+    "pulse/**/*",
+    "src/**/*",
+    "config/**/*",
+    "data/**/*",
+    "scripts/**/*",
+    "tsconfig.json",
+    ".env.example",
+    "template.package.json"
+  ],
   "devDependencies": {
     "@types/k6": "^2.0.0",
     "@types/node": "^25.9.1",
