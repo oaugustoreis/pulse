@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
-const { spawn, execSync } = require("child_process");
+const { spawn, execSync, execFileSync } = require("child_process");
 
 let mainWindow;
 let activeTestProcess = null;
@@ -228,7 +228,7 @@ ipcMain.handle("get-mock-status", async () => {
 
  ipcMain.handle("check-k6-installation", async () => {
     try {
-        const output = execSync("k6 version").toString();
+        const output = execFileSync("k6", ["version"]).toString();
         return { installed: true, version: output.trim() };
     } catch (e) {
         return { installed: false };

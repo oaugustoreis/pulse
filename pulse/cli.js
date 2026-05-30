@@ -4,7 +4,7 @@ const { Command } = require("commander");
 const chalk = require("chalk");
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, execFileSync } = require("child_process");
 const packageJson = require("../package.json");
 
 if (fs.existsSync(".env")) {
@@ -70,33 +70,46 @@ program
             const localBuildScript = "pulse/build.mjs";
             const globalBuildScript = path.join(__dirname, "build.mjs");
             const buildScript = fs.existsSync(localBuildScript) ? localBuildScript : globalBuildScript;
-            execSync(`node ${buildScript}`, { stdio: "inherit" });
+            execFileSync("node", [buildScript], { stdio: "inherit" });
         } catch (error) {
             console.error(chalk.red.bold("\n✖ Build failed. Aborting k6 run."));
             process.exit(1);
         }
 
-        let envVars = `-e SCENARIO=${finalScenario} -e ENV=${finalEnv}`;
-        if (options.vus) envVars += ` -e VUS=${options.vus}`;
-        if (options.duration) envVars += ` -e DURATION=${options.duration}`;
+        const k6Args = ["run", "--log-format", "raw"];
+
+        k6Args.push("-e", `SCENARIO=${finalScenario}`);
+        k6Args.push("-e", `ENV=${finalEnv}`);
+
+        if (options.vus) {
+            k6Args.push("-e", `VUS=${options.vus}`);
+        }
+        if (options.duration) {
+            k6Args.push("-e", `DURATION=${options.duration}`);
+        }
 
         const dotenv = require("dotenv").config();
         const envKeys = Object.keys(dotenv.parsed || {});
         envKeys.forEach((key) => {
             if (process.env[key] && key !== "SCENARIO" && key !== "ENV") {
-                envVars += ` -e ${key}=${process.env[key]}`;
+                k6Args.push("-e", `${key}=${process.env[key]}`);
             }
         });
 
-        const extraArgs = command.args
-            .filter((arg) => arg !== scenario && arg !== envArg)
-            .join(" ");
-        let k6Args = "";
-        if (options.vus) k6Args += ` --vus ${options.vus}`;
-        if (options.duration) k6Args += ` --duration ${options.duration}`;
-        if (extraArgs) k6Args += ` ${extraArgs}`;
+        if (options.vus) {
+            k6Args.push("--vus", options.vus);
+        }
+        if (options.duration) {
+            k6Args.push("--duration", options.duration);
+        }
 
-        const k6Command = `k6 run --log-format raw ${envVars}${k6Args} pulse/dist/main.js`;
+        const extraArgsArray = command.args.filter(
+            (arg) => arg !== scenario && arg !== envArg
+        );
+        k6Args.push(...extraArgsArray);
+
+        k6Args.push("pulse/dist/main.js");
+
         console.log(
             chalk.blue.bold(
                 "\n═══════════════════════════════════════════════════════\n",
@@ -104,7 +117,7 @@ program
         );
 
         try {
-            execSync(k6Command, { stdio: "inherit" });
+            execFileSync("k6", k6Args, { stdio: "inherit" });
         } catch (error) {
             process.exit(error.status || 1);
         }
@@ -121,7 +134,7 @@ program
             process.exit(1);
         }
         try {
-            execSync("node data/server.js", { stdio: "inherit" });
+            execFileSync("node", ["data/server.js"], { stdio: "inherit" });
         } catch (error) {
             console.error(chalk.red.bold("\n✖ Failed to run Mock Server."));
             process.exit(1);
@@ -198,6 +211,32 @@ program
             console.log(chalk.yellow("Please run 'pulse init' first."));
             process.exit(1);
         }
+
+        if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name)) {
+            console.error(
+                chalk.red.bold(
+                    "\n✖ Error: Invalid scenario name. Name must be in kebab-case (e.g., 'my-scenario-name') and contain only lowercase letters, numbers, and hyphens."
+                )
+            );
+            process.exit(1);
+        }
+
+        const baseDir = path.resolve(process.cwd(), "src");
+        const targetDirs = [
+            path.resolve(baseDir, "schemas", name),
+            path.resolve(baseDir, "use-cases", name),
+            path.resolve(baseDir, "flows", name),
+            path.resolve(baseDir, "profiles", name),
+            path.resolve(baseDir, "scenarios", name),
+        ];
+
+        for (const targetDir of targetDirs) {
+            if (!targetDir.startsWith(baseDir)) {
+                console.error(chalk.red.bold("\n✖ Error: Path traversal detected."));
+                process.exit(1);
+            }
+        }
+
         const camelName = name.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
         const capitalName =
             camelName.charAt(0).toUpperCase() + camelName.slice(1);
@@ -331,6 +370,25 @@ program
             console.log(chalk.yellow("Please run 'pulse init' first."));
             process.exit(1);
         }
+
+        if (!/^[A-Za-z0-9_]+$/.test(key)) {
+            console.error(
+                chalk.red.bold(
+                    "\n✖ Error: Invalid key name. Only alphanumeric characters and underscores are allowed."
+                )
+            );
+            process.exit(1);
+        }
+
+        if (value.includes("\n") || value.includes("\r")) {
+            console.error(
+                chalk.red.bold(
+                    "\n✖ Error: Value cannot contain newline characters."
+                )
+            );
+            process.exit(1);
+        }
+
         const envPath = ".env";
         let content = "";
         if (fs.existsSync(envPath)) {
@@ -370,7 +428,8 @@ function launchGui() {
     }
 
     try {
-        execSync("npx electron pulse/desktop/main.js", { stdio: "inherit" });
+        const npxCmd = process.platform === "win32" ? "npx.cmd" : "npx";
+        execFileSync(npxCmd, ["electron", "pulse/desktop/main.js"], { stdio: "inherit" });
     } catch (error) {
         console.error(chalk.red.bold("\n✖ Failed to launch desktop GUI."));
         process.exit(1);
