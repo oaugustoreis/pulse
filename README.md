@@ -1,6 +1,6 @@
 # Pulse Framework
 
-> A modular, scalable, and TypeScript-native performance engineering framework powered by **k6** and equipped with a beautiful **Desktop Dashboard**.
+> A modular, scalable, and TypeScript-native performance engineering framework powered by **K6**.
 
 Pulse brings modern software engineering practices to performance testing. Write structured, maintainable load tests in TypeScript with auto-discovery, reuse business flows, mock dependencies with an integrated mock server, and execute/monitor runs via the CLI or a sleek Desktop GUI.
 
@@ -57,7 +57,7 @@ This creates the following structure:
 │   └── desktop/         # Cockpit Electron Desktop dashboard
 ├── src/                 # Test code
 │   ├── flows/           # User flows / transaction groups
-│   ├── profiles/        # k6 load profiles (VUs, duration, etc.)
+│   ├── profiles/        # K6 load profiles (VUs, duration, etc.)
 │   ├── scenarios/       # Test entrypoints
 │   └── use-cases/       # Granular HTTP request calls
 └── tsconfig.json        # TypeScript configuration
@@ -134,7 +134,7 @@ The desktop app allows you to:
 
 ## Project Structure Explained
 
-- **Scenarios (`src/scenarios/`)**: The main entry points for k6. They define the lifecycle hook setups and map options/thresholds.
+- **Scenarios (`src/scenarios/`)**: The main entry points for K6. They define the lifecycle hook setups and map options/thresholds.
 - **Flows (`src/flows/`)**: Orchestrated actions that represent real-world user flows (e.g. browsing a product, adding to cart, checking out).
 - **Profiles (`src/profiles/`)**: Custom load profiles defining the virtual user ramp-ups and targets.
 - **Use Cases (`src/use-cases/`)**: Low-level, reusable API call definitions wrapped with validation checks.

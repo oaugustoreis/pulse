@@ -15,7 +15,7 @@ const program = new Command();
 
 program
     .name("pulse")
-    .description("Pulse: Modular Load Testing Framework powered by k6")
+    .description("Pulse: Modular Load Testing Framework powered by K6")
     .version(packageJson.version)
     .addHelpText(
         "before",
@@ -33,7 +33,7 @@ Pulse: Performance Engineering Runtime
 
 program
     .command("run")
-    .description("Execute a load test scenario using k6")
+    .description("Execute a load test scenario using K6")
     .argument("[scenario]", "Scenario name")
     .argument("[env]", "Target environment", "dev")
     .option("-v, --vus <number>", "Override Virtual Users")
