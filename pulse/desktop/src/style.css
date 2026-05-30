@@ -217,6 +217,20 @@ body {
     margin-top: auto;
 }
 
+.sidebar-footer-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.sidebar-footer-link:hover {
+    color: #a5b4fc;
+    text-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+}
+
 .cockpit-main {
     padding: 2.25rem 2.5rem;
     overflow-y: auto;
