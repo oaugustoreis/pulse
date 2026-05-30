@@ -67,7 +67,10 @@ program
 
         try {
             console.log(chalk.gray("Building TypeScript..."));
-            execSync("node scripts/build.mjs", { stdio: "inherit" });
+            const localBuildScript = "pulse/build.mjs";
+            const globalBuildScript = path.join(__dirname, "build.mjs");
+            const buildScript = fs.existsSync(localBuildScript) ? localBuildScript : globalBuildScript;
+            execSync(`node ${buildScript}`, { stdio: "inherit" });
         } catch (error) {
             console.error(chalk.red.bold("\n✖ Build failed. Aborting k6 run."));
             process.exit(1);
@@ -112,6 +115,11 @@ program
     .description("Start the integrated mock server")
     .action(() => {
         console.log(chalk.green.bold("\n🚀 Starting Pulse Mock Server..."));
+        if (!fs.existsSync("data/server.js")) {
+            console.error(chalk.red.bold("\n✖ Error: Mock server script not found at 'data/server.js'."));
+            console.log(chalk.yellow("Make sure you run this command inside an initialized Pulse workspace."));
+            process.exit(1);
+        }
         try {
             execSync("node data/server.js", { stdio: "inherit" });
         } catch (error) {
@@ -131,7 +139,6 @@ program
             "config",
             "data",
             "pulse",
-            "scripts",
             "src",
             "tsconfig.json",
             ".env.example"
@@ -186,6 +193,11 @@ program
     .description("Generate a new load test scenario boilerplate")
     .argument("<name>", "Name of the scenario (kebab-case)")
     .action((name) => {
+        if (!fs.existsSync("tsconfig.json")) {
+            console.error(chalk.red.bold("\n✖ Error: Not in an initialized Pulse workspace (missing tsconfig.json)."));
+            console.log(chalk.yellow("Please run 'pulse init' first."));
+            process.exit(1);
+        }
         const camelName = name.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
         const capitalName =
             camelName.charAt(0).toUpperCase() + camelName.slice(1);
@@ -193,17 +205,41 @@ program
             chalk.cyan(`Generating scenario boilerplate for "${name}"...`),
         );
 
+        const schemaDir = path.join("src/schemas", name);
+        fs.mkdirSync(schemaDir, { recursive: true });
+        fs.writeFileSync(
+            path.join(schemaDir, `${camelName}.schema.ts`),
+            `export const ${camelName}Schema = {
+    type: "object",
+    required: ["id"],
+    properties: {
+        id: { type: "number" }
+    }
+};
+`,
+        );
+
         const ucDir = path.join("src/use-cases", name);
         fs.mkdirSync(ucDir, { recursive: true });
         fs.writeFileSync(
             path.join(ucDir, `get${capitalName}.useCase.ts`),
             `import { get } from "@pulse/http";
+import { ps } from "@pulse/core";
+import { ${camelName}Schema } from "@src/schemas/${name}/${camelName}.schema";
 
 export interface ${capitalName}Params { baseUrl: string; token: string; }
 
 export function get${capitalName}({ baseUrl, token }: ${capitalName}Params) {
     const url = \`\${baseUrl}/${name}\`;
-    return get(url, { token }, 200, "get${capitalName}");
+    const res = get(url, { token }, 200, "get${capitalName}");
+
+    ps.expect(res)
+        .status(200)
+        .bodyNotEmpty()
+        .responseTimeLessThan(1000)
+        .jsonSchema(${camelName}Schema);
+
+    return res;
 }
 `,
         );
@@ -290,6 +326,11 @@ program
     .argument("<key>", "Variable key name")
     .argument("<value>", "Variable value")
     .action((key, value) => {
+        if (!fs.existsSync("tsconfig.json")) {
+            console.error(chalk.red.bold("\n✖ Error: Not in an initialized Pulse workspace (missing tsconfig.json)."));
+            console.log(chalk.yellow("Please run 'pulse init' first."));
+            process.exit(1);
+        }
         const envPath = ".env";
         let content = "";
         if (fs.existsSync(envPath)) {

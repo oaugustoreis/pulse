@@ -6,7 +6,7 @@ import { pluginManager } from "@pulse/plugins/plugin-manager";
 import { generateCustomHtmlReport } from "@pulse/reporter/customHtmlReporter";
 import "@pulse/plugins/index";
 
-import { registry } from "./virtual-registry";
+import { registry } from "@pulse/virtual-registry";
 
 const scenarioName = __ENV.SCENARIO || "";
 const config = registry[scenarioName];

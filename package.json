@@ -1,6 +1,6 @@
 {
   "name": "pulse-arch",
-  "version": "1.0.10",
+  "version": "1.2.2",
   "description": "Pulse: A modular and scalable k6 load testing framework",
   "main": "pulse/cli.js",
   "bin": {
@@ -30,8 +30,7 @@
       "src/**/*",
       "config/**/*",
       "pulse/**/*",
-      "data/**/*",
-      "scripts/**/*"
+      "data/**/*"
     ],
     "linux": {
       "target": [
@@ -56,7 +55,6 @@
     "src/**/*",
     "config/**/*",
     "data/**/*",
-    "scripts/**/*",
     "tsconfig.json",
     ".env.example",
     "template.package.json"

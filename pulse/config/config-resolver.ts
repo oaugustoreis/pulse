@@ -1,4 +1,4 @@
-import { RawEnv } from "../../src/generated-env";
+import { RawEnv } from "../generated-env";
 
 class ConfigResolver {
     get(key: string, defaultValue?: string): string {

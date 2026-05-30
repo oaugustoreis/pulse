@@ -4,6 +4,6 @@ pulse/dist/
 dist-desktop/
 summary.html
 *.log
-src/generated-env.ts
-src/virtual-registry.ts
+pulse/generated-env.ts
+pulse/virtual-registry.ts
 .antigravitycli/

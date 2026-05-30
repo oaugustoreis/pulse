@@ -100,7 +100,7 @@ function discoverScenarios() {
 
     modules.forEach((mod) => {
         const relativePath = path
-            .relative(path.join(__dirname, "../src"), mod.path)
+            .relative(path.join(__dirname, "../pulse"), mod.path)
             .replace(/\\/g, "/")
             .replace(".ts", "");
         const profilePath = relativePath
@@ -114,10 +114,10 @@ function discoverScenarios() {
         );
         const hasCustomThresholds = fs.existsSync(thresholdsPath);
 
-        imports += `import * as ${mod.name}Scenario from './${relativePath}';\n`;
-        imports += `import { ${mod.name}Profiles } from './${profilePath}';\n`;
+        imports += `import * as ${mod.name}Scenario from '${relativePath}';\n`;
+        imports += `import { ${mod.name}Profiles } from '${profilePath}';\n`;
         if (hasCustomThresholds) {
-            imports += `import { thresholds as ${mod.name}Thresholds } from './scenarios/${mod.kebab}/thresholds';\n`;
+            imports += `import { thresholds as ${mod.name}Thresholds } from '../src/scenarios/${mod.kebab}/thresholds';\n`;
         }
 
         registryEntries += `    ...Object.keys(${mod.name}Profiles || {}).reduce((acc: any, key) => {\n`;
@@ -140,12 +140,12 @@ async function build() {
 
     const virtualRegistry = discoverScenarios();
     fs.writeFileSync(
-        path.join(__dirname, "../src/virtual-registry.ts"),
+        path.join(__dirname, "../pulse/virtual-registry.ts"),
         virtualRegistry,
     );
 
     const envTypes = generateEnvTypes();
-    fs.writeFileSync(path.join(__dirname, "../src/generated-env.ts"), envTypes);
+    fs.writeFileSync(path.join(__dirname, "../pulse/generated-env.ts"), envTypes);
 
     console.log("Building framework bundle...");
     try {
