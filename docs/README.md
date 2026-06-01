@@ -267,6 +267,121 @@ export function productScenario(data: { baseUrl: string; token: string; }): void
 
 ---
 
+## 5. Como Adicionar Rotas no Mock Server & Usar em Testes
+
+Para possibilitar testes de carga rápidos e herméticos (com dependência zero de APIs externas), o Pulse conta com um **Mock Server integrado** na porta `3333` (utilizando `json-server`).
+
+### Passo 1: Criando a Rota Customizada no Mock Server (`data/server.js`)
+Abra o arquivo [data/server.js](file:///mnt/d/Pulse/data/server.js) e adicione seu endpoint usando a sintaxe clássica do Express. Lembre-se de adicioná-lo **antes** da chamada `server.use(router)`.
+
+```javascript
+// ==========================================
+// ROTA CUSTOMIZADA: Processamento de Pagamento
+// ==========================================
+server.post("/payments", (req, res) => {
+    console.log("--- Mock Payment Request Received ---");
+    
+    const { amount, card_number } = req.body;
+
+    if (!amount || !card_number) {
+        return res.status(400).json({
+            error: "MISSING_REQUIRED_FIELDS",
+            message: "Os campos 'amount' e 'card_number' são obrigatórios."
+        });
+    }
+
+    // Simulando latência artificial de 200ms para realismo sob teste de carga
+    setTimeout(() => {
+        res.status(201).json({
+            status: "APPROVED",
+            transaction_id: "tx_" + Math.random().toString(36).substr(2, 9),
+            processed_at: new Date().toISOString()
+        });
+    }, 200);
+});
+```
+
+### Passo 2: Criando o Schema do Contrato (`src/schemas/payment/payment.schema.ts`)
+Valida estruturalmente o retorno da API para garantir estabilidade contratual sob carga extrema.
+
+```typescript
+export const paymentSchema = {
+    type: "object",
+    required: ["status", "transaction_id", "processed_at"],
+    properties: {
+        status: { type: "string", enum: ["APPROVED", "REJECTED"] },
+        transaction_id: { type: "string" },
+        processed_at: { type: "string" }
+    }
+};
+```
+
+### Passo 3: Criando a Chamada Atômica / Use-Case (`src/use-cases/payment/processPayment.useCase.ts`)
+Executa o cliente HTTP e define as asserções de SLA funcionais com o `ps.expect`.
+
+```typescript
+import { post } from "@pulse/http";
+import { ps } from "@pulse/core";
+import { paymentSchema } from "@src/schemas/payment/payment.schema";
+
+export interface PaymentParams { baseUrl: string; token: string; amount: number; cardNumber: string; }
+
+export function processPayment({ baseUrl, token, amount, cardNumber }: PaymentParams) {
+    const url = `${baseUrl}/payments`;
+    const payload = JSON.stringify({ amount, card_number: cardNumber });
+
+    const res = post(url, payload, { token }, 201, "ProcessPayment");
+
+    // Valida os SLAs de resposta e integridade do contrato JSON
+    ps.expect(res)
+        .status(201)
+        .bodyNotEmpty()
+        .responseTimeLessThan(500) // Timeout/SLA de 500ms
+        .jsonSchema(paymentSchema);
+
+    return res;
+}
+```
+
+### Passo 4: Orquestrando o Fluxo de Negócio / Flow (`src/flows/payment/payment.flow.ts`)
+Associa múltiplos Use Cases em um fluxo lógico e adiciona telemetria com agrupamento transacional (`ps.group`) e tempo de espera realista (`ps.sleep`).
+
+```typescript
+import { ps } from "@pulse/core";
+import { processPayment } from "@src/use-cases/payment/processPayment.useCase";
+
+export interface FlowParams { baseUrl: string; token: string; }
+
+export function paymentFlow({ baseUrl, token }: FlowParams): void {
+    ps.group("Transação de Pagamento", () => {
+        processPayment({
+            baseUrl,
+            token,
+            amount: 150.50,
+            cardNumber: "4532111199998888"
+        });
+
+        ps.sleep(1); // Think time
+    });
+}
+```
+
+### Passo 5: Executando Tudo Junto
+1. Inicie o Mock Server com o comando:
+   ```bash
+   pulse mock
+   ```
+2. No seu arquivo `.env`, certifique-se de que a `BASE_URL_DEV` aponta para o endereço local:
+   ```properties
+   BASE_URL_DEV=http://localhost:3333
+   ```
+3. Dispare o teste de carga apontando para o ambiente `dev`:
+   ```bash
+   pulse run payment_scenario dev
+   ```
+
+---
+
 ## Credits
 
 Developed and maintained by Augusto Reis (https://github.com/oaugustoreis).
