@@ -247,6 +247,29 @@ export function paymentFlow({ baseUrl, token }: FlowParams): void {
 }
 ```
 
+### 4. Criar o Cenário de Entrada / Scenario (`src/scenarios/payment/payment.scenario.ts`)
+Funciona como o ponto de entrada principal reconhecido pelo compilador do K6. Resolve as variáveis de ambiente, obtém as credenciais e executa o Fluxo.
+
+```typescript
+import { Env } from "@pulse/config";
+import { paymentFlow } from "@src/flows/payment/payment.flow";
+
+export function setupPayment(): { baseUrl: string; token: string; } {
+    const envSuffix = (Env.ENV || "dev").toUpperCase();
+    const baseUrl = Env[`BASE_URL_${envSuffix}`] || Env.BASE_URL || "http://localhost:3333";
+    const token = Env[`TOKEN_${envSuffix}`] || Env.TOKEN || "no-token";
+
+    return { baseUrl, token };
+}
+
+export function paymentScenario(data: { baseUrl: string; token: string; }): void {
+    paymentFlow({
+        baseUrl: data.baseUrl,
+        token: data.token
+    });
+}
+```
+
 ---
 
 ## 5. Executando e Testando Tudo Junto
@@ -261,7 +284,7 @@ export function paymentFlow({ baseUrl, token }: FlowParams): void {
    ```
 3. Execute o seu script apontando para o ambiente `dev`:
    ```bash
-   pulse run payment_scenario dev
+   pulse run payment dev
    ```
 
 Se tudo estiver correto, as requisições serão processadas localmente e você verá a latência simulada de **200ms** sendo medida no console do K6 e no Cockpit Dashboard do Pulse!

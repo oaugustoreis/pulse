@@ -366,7 +366,30 @@ export function paymentFlow({ baseUrl, token }: FlowParams): void {
 }
 ```
 
-### Step 5: Running the Test E2E
+### Step 5: Creating the Scenario and Load Profile (`src/scenarios/payment/payment.scenario.ts`)
+Acts as the test entrypoint loaded by K6. It handles initialization, sharding, resolves dynamic parameters, and executes the Flow.
+
+```typescript
+import { Env } from "@pulse/config";
+import { paymentFlow } from "@src/flows/payment/payment.flow";
+
+export function setupPayment(): { baseUrl: string; token: string; } {
+    const envSuffix = (Env.ENV || "dev").toUpperCase();
+    const baseUrl = Env[`BASE_URL_${envSuffix}`] || Env.BASE_URL || "http://localhost:3333";
+    const token = Env[`TOKEN_${envSuffix}`] || Env.TOKEN || "no-token";
+
+    return { baseUrl, token };
+}
+
+export function paymentScenario(data: { baseUrl: string; token: string; }): void {
+    paymentFlow({
+        baseUrl: data.baseUrl,
+        token: data.token
+    });
+}
+```
+
+### Step 6: Running the Test E2E
 1. Start the local Mock Server:
    ```bash
    pulse mock
@@ -377,7 +400,7 @@ export function paymentFlow({ baseUrl, token }: FlowParams): void {
    ```
 3. Run the performance test scenario targeting the `dev` environment:
    ```bash
-   pulse run payment_scenario dev
+   pulse run payment dev
    ```
 
 ---
