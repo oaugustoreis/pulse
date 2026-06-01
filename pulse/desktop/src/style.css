@@ -3,12 +3,12 @@
     --sidebar-bg: rgba(11, 15, 30, 0.65);
     --card-bg: rgba(20, 27, 50, 0.45);
     --card-border: rgba(255, 255, 255, 0.06);
-    --primary: #5c54ec;
-    --primary-hover: #4d45d8;
+    --primary: #1f1633;
+    --primary-hover: #291d42;
     --primary-glow: rgba(92, 84, 236, 0.25);
     --secondary: rgba(255, 255, 255, 0.08);
     --secondary-hover: rgba(255, 255, 255, 0.15);
-    --success: #10b981;
+    --success: #10b910;
     --success-glow: rgba(16, 185, 129, 0.2);
     --error: #f43f5e;
     --error-glow: rgba(244, 63, 94, 0.2);
@@ -194,14 +194,19 @@ body {
 }
 
 .nav-btn:hover {
-    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background: rgba(146, 146, 146, 0.03);
     color: var(--text-main);
 }
 
 .nav-btn.active {
     background: var(--primary);
     color: var(--text-main);
-    box-shadow: 0 4px 15px rgba(92, 84, 236, 0.3);
+}
+
+.nav-btn.active:hover {
+    background: var(--primary-hover);
+    color: var(--text-main);
 }
 
 .nav-btn.active svg {
@@ -345,9 +350,8 @@ input {
 }
 
 input:focus {
-    border-color: var(--primary);
     background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 10px var(--primary-glow);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 select {
@@ -376,15 +380,15 @@ select {
 
 select:hover {
     background-color: rgba(20, 27, 50, 0.7);
-    border-color: rgba(129, 140, 248, 0.4);
-    box-shadow: 0 4px 20px rgba(92, 84, 236, 0.08);
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     transform: translateY(-1px);
 }
 
 select:focus {
     border-color: var(--primary);
     background-color: rgba(11, 15, 30, 0.8);
-    box-shadow: 0 0 20px var(--primary-glow);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z'/%3E%3C/svg%3E");
 }
 
@@ -430,8 +434,7 @@ select optgroup option {
 
 .env-preview-card:hover {
     background: rgba(92, 84, 236, 0.07);
-    border-color: rgba(92, 84, 236, 0.5);
-    box-shadow: 0 4px 20px rgba(92, 84, 236, 0.08);
+
 }
 
 .env-preview-card .preview-icon {
@@ -450,21 +453,10 @@ select optgroup option {
     font-size: 0.8rem;
     font-weight: 600;
     color: #818cf8;
-    text-shadow: 0 0 8px rgba(129, 140, 248, 0.15);
+
     word-break: break-all;
 }
 
-@keyframes pulseGlow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 5px rgba(92, 84, 236, 0.01);
-    }
-
-    50% {
-        box-shadow: 0 0 12px rgba(92, 84, 236, 0.05);
-    }
-}
 
 .btn {
     font-family: var(--font-sans);
@@ -490,10 +482,11 @@ select optgroup option {
 .btn-primary {
     background: var(--primary);
     color: var(--text-main);
-    box-shadow: 0 4px 15px var(--primary-glow);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     background: var(--primary-hover);
     transform: translateY(-1px);
 }
@@ -521,11 +514,11 @@ select optgroup option {
 .btn-success {
     background: var(--success);
     color: var(--text-main);
-    box-shadow: 0 4px 15px var(--success-glow);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .btn-success:hover {
-    background: #0d9f6e;
+    background: #7fd310;
 }
 
 .hidden {
@@ -668,15 +661,15 @@ select optgroup option {
     align-items: center;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--card-border);
-    border-radius: 6px;
+    border-radius: 100px;
+    height: 40px;
     padding: 0.2rem 0.5rem;
     gap: 0.35rem;
     transition: var(--transition);
 }
 
 .terminal-search-box:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 10px var(--primary-glow);
+
     background: rgba(255, 255, 255, 0.05);
 }
 
