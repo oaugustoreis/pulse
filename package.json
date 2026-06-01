@@ -1,6 +1,6 @@
 {
   "name": "pulse-arch",
-  "version": "1.3.6",
+  "version": "1.3.8",
   "description": "Pulse: A modular and scalable K6 load testing framework",
   "main": "pulse/cli.js",
   "bin": {

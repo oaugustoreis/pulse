@@ -31,7 +31,7 @@ Stores global options like default timeouts, base thresholds, and target SLA pro
 Stores CSV datasets, dynamic generators, static payloads, and the built-in mock server.
 - **data/datasets/**: CSV files representing user accounts, product lists, or other database-seeded master data.
 - **data/generators/**: Helper scripts to generate dynamic mock data on the fly (e.g., random names, unique identifiers, CPFs) to prevent cache hits or data collision under heavy load.
-- **data/server.js**: An integrated mock server. Allows running performance runs locally without hitting live staging environments.
+- **data/server.js**: An integrated mock server. Allows running performance runs locally without hitting live staging environments. Confira o [Tutorial do Mock Server](mock-server.md) para aprender a estender o servidor com rotas customizadas.
 
 ### /pulse (The Core Engine - Brief Overview)
 This is the heart of the framework. Users do not need to modify files here, but it contains incredibly useful utilities:
@@ -140,6 +140,9 @@ The pulse CLI is designed to completely automate setup, scaffolding, running, an
   ```bash
   pulse mock
   ```
+
+> [!TIP]
+> Você pode aprender a estender e adicionar rotas customizadas para seus testes locais lendo o nosso [Tutorial do Mock Server](mock-server.md).
 
 ### 5. pulse gui / pulse open gui
 - **Why it exists**: Scripting and executing via command line can feel dry, and analyzing console logs or opening static HTML report files manually is annoying.
