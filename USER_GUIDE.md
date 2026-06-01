@@ -267,16 +267,16 @@ export function productScenario(data: { baseUrl: string; token: string; }): void
 
 ---
 
-## 5. Como Adicionar Rotas no Mock Server & Usar em Testes
+## 5. How to Add Custom Routes in Mock Server and Use in Load Tests
 
-Para possibilitar testes de carga rápidos e herméticos (com dependência zero de APIs externas), o Pulse conta com um **Mock Server integrado** na porta `3333` (utilizando `json-server`).
+To enable fast and hermetic load tests (with zero dependencies on external APIs), Pulse includes an **integrated Mock Server** running on port `3333` (powered by `json-server`).
 
-### Passo 1: Criando a Rota Customizada no Mock Server (`data/server.js`)
-Abra o arquivo [data/server.js](file:///mnt/d/Pulse/data/server.js) e adicione seu endpoint usando a sintaxe clássica do Express. Lembre-se de adicioná-lo **antes** da chamada `server.use(router)`.
+### Step 1: Creating the Custom Route in the Mock Server (`data/server.js`)
+Open the [data/server.js](file:///mnt/d/Pulse/data/server.js) file and add your endpoint using classic Express syntax. Remember to place it **before** the `server.use(router)` middleware call.
 
 ```javascript
 // ==========================================
-// ROTA CUSTOMIZADA: Processamento de Pagamento
+// CUSTOM ROUTE: Payment Processing Simulation
 // ==========================================
 server.post("/payments", (req, res) => {
     console.log("--- Mock Payment Request Received ---");
@@ -286,11 +286,11 @@ server.post("/payments", (req, res) => {
     if (!amount || !card_number) {
         return res.status(400).json({
             error: "MISSING_REQUIRED_FIELDS",
-            message: "Os campos 'amount' e 'card_number' são obrigatórios."
+            message: "The 'amount' and 'card_number' fields are required."
         });
     }
 
-    // Simulando latência artificial de 200ms para realismo sob teste de carga
+    // Simulating 200ms of network latency for realistic load testing conditions
     setTimeout(() => {
         res.status(201).json({
             status: "APPROVED",
@@ -301,8 +301,8 @@ server.post("/payments", (req, res) => {
 });
 ```
 
-### Passo 2: Criando o Schema do Contrato (`src/schemas/payment/payment.schema.ts`)
-Valida estruturalmente o retorno da API para garantir estabilidade contratual sob carga extrema.
+### Step 2: Creating the Contract Schema (`src/schemas/payment/payment.schema.ts`)
+Structurally validates the API response payload to ensure contract stability under heavy concurrent load.
 
 ```typescript
 export const paymentSchema = {
@@ -316,8 +316,8 @@ export const paymentSchema = {
 };
 ```
 
-### Passo 3: Criando a Chamada Atômica / Use-Case (`src/use-cases/payment/processPayment.useCase.ts`)
-Executa o cliente HTTP e define as asserções de SLA funcionais com o `ps.expect`.
+### Step 3: Creating the Atomic Call / Use Case (`src/use-cases/payment/processPayment.useCase.ts`)
+Executes the HTTP client request and sets up functional SLA assertions using `ps.expect`.
 
 ```typescript
 import { post } from "@pulse/http";
@@ -332,19 +332,19 @@ export function processPayment({ baseUrl, token, amount, cardNumber }: PaymentPa
 
     const res = post(url, payload, { token }, 201, "ProcessPayment");
 
-    // Valida os SLAs de resposta e integridade do contrato JSON
+    // Validate response SLA times and JSON contract integrity
     ps.expect(res)
         .status(201)
         .bodyNotEmpty()
-        .responseTimeLessThan(500) // Timeout/SLA de 500ms
+        .responseTimeLessThan(500) // 500ms latency SLA
         .jsonSchema(paymentSchema);
 
     return res;
 }
 ```
 
-### Passo 4: Orquestrando o Fluxo de Negócio / Flow (`src/flows/payment/payment.flow.ts`)
-Associa múltiplos Use Cases em um fluxo lógico e adiciona telemetria com agrupamento transacional (`ps.group`) e tempo de espera realista (`ps.sleep`).
+### Step 4: Orchestrating the Business Journey / Flow (`src/flows/payment/payment.flow.ts`)
+Orchestrates multiple use cases into a logical user journey, injecting pacing think-time (`ps.sleep`) and enabling aggregated transaction telemetry (`ps.group`).
 
 ```typescript
 import { ps } from "@pulse/core";
@@ -366,16 +366,16 @@ export function paymentFlow({ baseUrl, token }: FlowParams): void {
 }
 ```
 
-### Passo 5: Executando Tudo Junto
-1. Inicie o Mock Server com o comando:
+### Step 5: Running the Test E2E
+1. Start the local Mock Server:
    ```bash
    pulse mock
    ```
-2. No seu arquivo `.env`, certifique-se de que a `BASE_URL_DEV` aponta para o endereço local:
+2. In your `.env` file, ensure `BASE_URL_DEV` points to the local mock instance:
    ```properties
    BASE_URL_DEV=http://localhost:3333
    ```
-3. Dispare o teste de carga apontando para o ambiente `dev`:
+3. Run the performance test scenario targeting the `dev` environment:
    ```bash
    pulse run payment_scenario dev
    ```
