@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     startMockServer: () => ipcRenderer.invoke('start-mock-server'),
     stopMockServer: () => ipcRenderer.invoke('stop-mock-server'),
     getMockStatus: () => ipcRenderer.invoke('get-mock-status'),
+    generateScenarioFromCurl: (name, parsedCurl) => ipcRenderer.invoke('generate-scenario-from-curl', name, parsedCurl),
     onTestLog: (callback) => {
         const sub = (e, log) => callback(log);
         ipcRenderer.on('test-log', sub);

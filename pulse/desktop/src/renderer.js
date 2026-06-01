@@ -125,6 +125,49 @@ function switchTab(targetTab) {
     });
 }
 
+function showToast(title, message, type = "success") {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+
+    let icon = "✨";
+    if (type === "success") icon = "✔";
+    else if (type === "error") icon = "✖";
+    else if (type === "info") icon = "ℹ";
+
+    toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    // Trigger reflow to apply transition CSS
+    toast.offsetHeight;
+
+    toast.classList.add("show");
+
+    const closeBtn = toast.querySelector(".toast-close");
+    closeBtn.addEventListener("click", () => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400);
+    });
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.classList.remove("show");
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 5000);
+}
+
 navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
         const targetTab = btn.getAttribute("data-tab");
@@ -341,10 +384,10 @@ btnSaveEnv.addEventListener("click", async () => {
 
     const res = await window.electronAPI.saveEnvConfig(config);
     if (res.success) {
-        alert("Environment variables saved successfully!");
+        showToast("Success", "Environment variables saved successfully!", "success");
         loadEnvConfig();
     } else {
-        alert("Failed to save: " + res.error);
+        showToast("Error", "Failed to save: " + res.error, "error");
     }
 });
 
@@ -371,7 +414,7 @@ btnLaunchTest.addEventListener("click", async () => {
     const env = selectEnv.value;
 
     if (!scenario) {
-        alert("Please select a scenario profile first!");
+        showToast("Select Scenario", "Please select a scenario profile first!", "info");
         return;
     }
 
@@ -732,3 +775,294 @@ setInterval(async () => {
         mockStatusText.innerText = "Mock: Port 3333";
     }
 }, 3000);
+
+// ==========================================
+// cURL Scenario Generator Logic
+// ==========================================
+
+// Tokenize command string (handling quotes, backslash line continuations)
+function parseShellCommand(cmdStr) {
+    const args = [];
+    let current = '';
+    let inDoubleQuotes = false;
+    let inSingleQuotes = false;
+    let escaped = false;
+
+    for (let i = 0; i < cmdStr.length; i++) {
+        const char = cmdStr[i];
+        if (escaped) {
+            current += char;
+            escaped = false;
+            continue;
+        }
+        if (char === '\\') {
+            if (cmdStr[i + 1] === '\n') {
+                i++; // Skip backslash and newline (line continuation)
+            } else {
+                escaped = true;
+            }
+            continue;
+        }
+        if (char === '"' && !inSingleQuotes) {
+            inDoubleQuotes = !inDoubleQuotes;
+            continue;
+        }
+        if (char === "'" && !inDoubleQuotes) {
+            inSingleQuotes = !inSingleQuotes;
+            continue;
+        }
+        if ((char === ' ' || char === '\t' || char === '\n' || char === '\r') && !inDoubleQuotes && !inSingleQuotes) {
+            if (current) {
+                args.push(current);
+                current = '';
+            }
+            continue;
+        }
+        current += char;
+    }
+    if (current) {
+        args.push(current);
+    }
+    return args;
+}
+
+// Complete cURL parser
+function parseCurlCommand(curlStr) {
+    const args = parseShellCommand(curlStr.trim());
+    let method = "GET";
+    const headers = {};
+    let body = "";
+    let url = "";
+
+    const skipSet = new Set([
+        "-X", "--request",
+        "-H", "--header",
+        "-d", "--data", "--data-raw", "--data-binary", "--data-ascii", "--data-urlencode",
+        "-A", "--user-agent",
+        "-u", "--user",
+        "-b", "--cookie",
+        "-c", "--cookie-jar",
+        "-o", "--output"
+    ]);
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (arg === "-X" || arg === "--request") {
+            method = args[i + 1]?.toUpperCase() || "GET";
+            i++;
+        } else if (arg === "-H" || arg === "--header") {
+            const headerStr = args[i + 1] || "";
+            const colonIndex = headerStr.indexOf(":");
+            if (colonIndex > -1) {
+                const key = headerStr.slice(0, colonIndex).trim();
+                const val = headerStr.slice(colonIndex + 1).trim();
+                headers[key] = val;
+            }
+            i++;
+        } else if (arg === "-d" || arg === "--data" || arg === "--data-raw" || arg === "--data-binary" || arg === "--data-ascii" || arg === "--data-urlencode") {
+            body = args[i + 1] || "";
+            if (method === "GET") {
+                method = "POST";
+            }
+            i++;
+        } else if (arg.startsWith("-")) {
+            if (skipSet.has(arg)) {
+                i++;
+            }
+        } else {
+            // Treat as URL if not already captured and does not start with -
+            if (!url && (arg.startsWith("http://") || arg.startsWith("https://") || arg.includes("/") || arg.includes("."))) {
+                url = arg;
+            }
+        }
+    }
+
+    return { method, url, headers, body };
+}
+
+const genScenarioNameInput = document.getElementById("generator-scenario-name");
+const genNameError = document.getElementById("generator-name-error");
+const genCurlInput = document.getElementById("generator-curl-input");
+const btnGenerateScenario = document.getElementById("btn-generate-scenario");
+
+const previewEmpty = document.getElementById("generator-preview-empty");
+const previewDetails = document.getElementById("generator-preview-details");
+const previewMethod = document.getElementById("preview-method");
+const previewUrl = document.getElementById("preview-url");
+const previewBaseUrl = document.getElementById("preview-base-url");
+const previewEndpointPath = document.getElementById("preview-endpoint-path");
+const previewQueriesTitle = document.getElementById("preview-queries-title");
+const previewQueriesWrapper = document.getElementById("preview-queries-wrapper");
+const previewQueriesList = document.getElementById("preview-queries-list");
+const previewHeadersList = document.getElementById("preview-headers-list");
+const previewBodyTitle = document.getElementById("preview-body-title");
+const previewBodyContent = document.getElementById("preview-body-content");
+
+// Validation helper
+function validateScenarioName(name) {
+    return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(name);
+}
+
+genScenarioNameInput.addEventListener("input", () => {
+    const val = genScenarioNameInput.value.trim();
+    if (val === "" || validateScenarioName(val)) {
+        genNameError.classList.add("hidden");
+    } else {
+        genNameError.classList.remove("hidden");
+    }
+});
+
+let parsedCurlData = null;
+
+function updateCurlPreview() {
+    const curlVal = genCurlInput.value.trim();
+    if (!curlVal) {
+        previewEmpty.classList.remove("hidden");
+        previewDetails.classList.add("hidden");
+        parsedCurlData = null;
+        return;
+    }
+
+    try {
+        const parsed = parseCurlCommand(curlVal);
+        parsedCurlData = parsed;
+
+        previewEmpty.classList.add("hidden");
+        previewDetails.classList.remove("hidden");
+
+        // Set Method badge
+        previewMethod.innerText = parsed.method;
+        previewMethod.className = `preview-method-badge ${parsed.method.toLowerCase()}`;
+
+        // Set URL text
+        previewUrl.innerText = parsed.url || "(No URL detected)";
+        
+        let rawUrl = parsed.url || "http://localhost:3333";
+        if (!rawUrl.includes("://")) {
+            rawUrl = "https://" + rawUrl;
+        }
+        
+        let urlObj;
+        try {
+            urlObj = new URL(rawUrl);
+            previewBaseUrl.innerText = `${urlObj.protocol}//${urlObj.host}`;
+            previewEndpointPath.innerText = urlObj.pathname;
+        } catch (e) {
+            previewBaseUrl.innerText = "-";
+            previewEndpointPath.innerText = "-";
+            urlObj = null;
+        }
+
+        // Render Queries
+        previewQueriesList.innerHTML = "";
+        if (urlObj && Array.from(urlObj.searchParams.keys()).length > 0) {
+            previewQueriesTitle.classList.remove("hidden");
+            previewQueriesWrapper.classList.remove("hidden");
+            urlObj.searchParams.forEach((val, key) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${key}</td><td>${val}</td>`;
+                previewQueriesList.appendChild(tr);
+            });
+        } else {
+            previewQueriesTitle.classList.add("hidden");
+            previewQueriesWrapper.classList.add("hidden");
+        }
+
+        // Render Headers
+        previewHeadersList.innerHTML = "";
+        const headerKeys = Object.keys(parsed.headers);
+        if (headerKeys.length > 0) {
+            headerKeys.forEach(key => {
+                const val = parsed.headers[key];
+                const tr = document.createElement("tr");
+                const isAuth = key.toLowerCase() === "authorization";
+                tr.innerHTML = `<td>${key}</td><td style="${isAuth ? 'color: #f59e0b; font-weight: 600;' : ''}">${val} ${isAuth ? '🔑 (Parameterizado)' : ''}</td>`;
+                previewHeadersList.appendChild(tr);
+            });
+        } else {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="2" style="color: var(--text-muted); font-style: italic; text-align: center;">No headers parsed</td>`;
+            previewHeadersList.appendChild(tr);
+        }
+
+        // Render Request Body
+        if (parsed.body) {
+            previewBodyTitle.classList.remove("hidden");
+            previewBodyContent.classList.remove("hidden");
+            try {
+                const formattedBody = JSON.stringify(JSON.parse(parsed.body), null, 2);
+                previewBodyContent.innerText = formattedBody;
+                previewBodyContent.style.color = "#38bdf8"; // vivid light blue
+            } catch (e) {
+                previewBodyContent.innerText = parsed.body;
+                previewBodyContent.style.color = "#f43f5e"; // soft warning red
+            }
+        } else {
+            previewBodyTitle.classList.add("hidden");
+            previewBodyContent.classList.add("hidden");
+        }
+    } catch (err) {
+        console.error("Preview parser error:", err);
+    }
+}
+
+genCurlInput.addEventListener("input", updateCurlPreview);
+
+btnGenerateScenario.addEventListener("click", async () => {
+    const name = genScenarioNameInput.value.trim();
+    if (!name) {
+        showToast("Missing Name", "Please provide a scenario name first!", "info");
+        return;
+    }
+    if (!validateScenarioName(name)) {
+        showToast("Invalid Name", "Scenario name is invalid! Use kebab-case (e.g. my-scenario).", "error");
+        return;
+    }
+    if (!parsedCurlData) {
+        showToast("Missing cURL", "Please paste a valid cURL command first!", "info");
+        return;
+    }
+    if (!parsedCurlData.url) {
+        showToast("Missing URL", "The pasted cURL command is missing a valid HTTP URL!", "error");
+        return;
+    }
+
+    try {
+        btnGenerateScenario.disabled = true;
+        btnGenerateScenario.innerText = "⏳ Generating files...";
+        
+        const res = await window.electronAPI.generateScenarioFromCurl({
+            name,
+            parsedCurl: parsedCurlData
+        });
+
+        if (res.success) {
+            showToast("Generation Successful", `Load test scenario "${name}" has been successfully generated inside "src/"!`, "success");
+            
+            // Clear inputs
+            genScenarioNameInput.value = "";
+            genCurlInput.value = "";
+            previewEmpty.classList.remove("hidden");
+            previewDetails.classList.add("hidden");
+            parsedCurlData = null;
+
+            // Automatically reload scenarios to populate the Control Room dropdown instantly!
+            await loadScenarios();
+
+            // Switch to the Control Room tab so they can run it
+            switchTab("control-room");
+
+            // Select the newly created scenario in the dropdown
+            setTimeout(() => {
+                selectScenario.value = name;
+            }, 100);
+        } else {
+            showToast("Generation Error", res.error, "error");
+        }
+    } catch (e) {
+        showToast("Generation Failed", e.message, "error");
+    } finally {
+        btnGenerateScenario.disabled = false;
+        btnGenerateScenario.innerText = "✨ Generate Scenario Files";
+    }
+});

@@ -238,7 +238,7 @@ program
             process.exit(1);
         }
 
-        const k6Args = ["run", "--log-format", "raw"];
+        const k6Args = ["run", "--log-format", "raw", "--quiet"];
 
         k6Args.push("-e", `SCENARIO=${finalScenario}`);
         k6Args.push("-e", `ENV=${finalEnv}`);

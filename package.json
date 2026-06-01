@@ -11,7 +11,7 @@
     "pulse": "node pulse/cli.js",
     "mock-server": "node data/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "load": "npm run pulse -- run",
+    "load": "npm run pulse -- run -q",
     "gen": "npm run pulse -- gen",
     "add-env": "npm run pulse -- add-env",
     "gui": "electron pulse/desktop/main.js",

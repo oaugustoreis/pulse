@@ -98,6 +98,12 @@
                         </svg>
                         Mock Server
                     </button>
+                    <button class="nav-btn" data-tab="curl-generator">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M7.5 5.6L10 7 8.6 4.5 10 2 7.5 3.4 5 2l1.4 2.5L5 7zm12 9.8L17 14l1.4 2.5-2.5-1.4-2.5 1.4 1.4-2.5-1.4-2.5 2.5 1.4 2.5-1.4-1.4 2.5zm0-9.8L17 4l1.4 2.5-2.5-1.4-2.5 1.4 1.4-2.5-1.4-2.5 2.5 1.4 2.5-1.4-1.4 2.5zM3 21h3.75L17.81 9.94l-3.75-3.75L3 17.25V21zm17.71-12.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                        </svg>
+                        cURL Generator
+                    </button>
                 </nav>
 
                 <div class="sidebar-footer">
@@ -413,9 +419,106 @@ Mock server logs will stream here...</pre
                         </div>
                     </div>
                 </section>
+
+                <section class="tab-content" id="tab-curl-generator">
+                    <div class="header-banner">
+                        <h2>cURL to Scenario Generator</h2>
+                        <p>
+                            Instantly convert standard API cURL commands into fully decoupled, production-ready k6 load test scenarios.
+                        </p>
+                    </div>
+
+                    <div class="generator-grid">
+                        <div class="glass-card generator-input-panel">
+                            <h3 class="card-title">Scenario Definition</h3>
+                            
+                            <div class="form-group">
+                                <label for="generator-scenario-name">Scenario Name (kebab-case)</label>
+                                <input
+                                    type="text"
+                                    id="generator-scenario-name"
+                                    placeholder="e.g., user-login-load"
+                                />
+                                <span class="error-text hidden" id="generator-name-error" style="color: var(--error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                                    Invalid name! Name must be in kebab-case (e.g. 'my-scenario')
+                                </span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="generator-curl-input">Paste cURL Command</label>
+                                <textarea
+                                    id="generator-curl-input"
+                                    placeholder="curl -X POST &quot;https://api.example.com/v1/users&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer my-secret-token&quot; \
+  -d '{&quot;name&quot;: &quot;John Doe&quot;, &quot;role&quot;: &quot;admin&quot;}'"
+                                ></textarea>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button
+                                    class="btn btn-primary"
+                                    id="btn-generate-scenario"
+                                >
+                                    ✨ Generate Scenario Files
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card generator-preview-panel">
+                            <h3 class="card-title">Live Parsed Preview</h3>
+                            
+                            <div class="preview-empty-state" id="generator-preview-empty">
+                                <div class="icon" style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px var(--primary-glow));">🪄</div>
+                                <p style="color: var(--text-muted); font-size: 0.95rem;">Paste a cURL command to see parsed configuration details in real-time.</p>
+                            </div>
+
+                            <div class="preview-details-container hidden" id="generator-preview-details">
+                                <div class="preview-header-row">
+                                    <span class="preview-method-badge" id="preview-method">POST</span>
+                                    <span class="preview-url-text" id="preview-url">https://api.example.com/v1/users</span>
+                                </div>
+
+                                <div class="preview-url-parts">
+                                    <div><strong>Base URL:</strong> <span id="preview-base-url" class="mono-text">-</span></div>
+                                    <div><strong>Endpoint Route:</strong> <span id="preview-endpoint-path" class="mono-text">-</span></div>
+                                </div>
+
+                                <div class="preview-section-title" id="preview-queries-title">Query Parameters</div>
+                                <div class="preview-table-wrapper" id="preview-queries-wrapper">
+                                    <table class="preview-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter Key</th>
+                                                <th>Parsed Default Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="preview-queries-list"></tbody>
+                                    </table>
+                                </div>
+
+                                <div class="preview-section-title">Request Headers</div>
+                                <div class="preview-table-wrapper">
+                                    <table class="preview-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Header Field</th>
+                                                <th>Mapped Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="preview-headers-list"></tbody>
+                                    </table>
+                                </div>
+
+                                <div class="preview-section-title" id="preview-body-title">Request Payload</div>
+                                <pre class="mono-code-block" id="preview-body-content"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </main>
         </div>
-
+        <div id="toast-container" class="toast-container"></div>
         <script src="renderer.js"></script>
     </body>
 </html>
