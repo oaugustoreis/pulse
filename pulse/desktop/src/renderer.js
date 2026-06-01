@@ -1,3 +1,109 @@
+if (!window.electronAPI) {
+    const listeners = {
+        "test-log": [],
+        "test-finished": [],
+        "mock-log": [],
+        "mock-finished": []
+    };
+
+    let testLogSource = null;
+    let mockLogSource = null;
+
+    function setupTestStreams() {
+        if (testLogSource) return;
+        testLogSource = new EventSource("/api/test-stream");
+        testLogSource.addEventListener("log", (e) => {
+            const chunk = JSON.parse(e.data);
+            listeners["test-log"].forEach(cb => cb(chunk));
+        });
+        testLogSource.addEventListener("finished", (e) => {
+            const code = JSON.parse(e.data);
+            listeners["test-finished"].forEach(cb => cb(code));
+            testLogSource.close();
+            testLogSource = null;
+        });
+        testLogSource.onerror = () => {
+            testLogSource.close();
+            testLogSource = null;
+        };
+    }
+
+    function setupMockStreams() {
+        if (mockLogSource) return;
+        mockLogSource = new EventSource("/api/mock-stream");
+        mockLogSource.addEventListener("log", (e) => {
+            const chunk = JSON.parse(e.data);
+            listeners["mock-log"].forEach(cb => cb(chunk));
+        });
+        mockLogSource.addEventListener("finished", (e) => {
+            const code = JSON.parse(e.data);
+            listeners["mock-finished"].forEach(cb => cb(code));
+            mockLogSource.close();
+            mockLogSource = null;
+        });
+        mockLogSource.onerror = () => {
+            mockLogSource.close();
+            mockLogSource = null;
+        };
+    }
+
+    window.electronAPI = {
+        getScenarios: () => fetch("/api/scenarios").then(r => r.json()),
+        getEnvConfig: () => fetch("/api/env-config").then(r => r.json()),
+        saveEnvConfig: (config) => fetch("/api/save-env-config", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(config)
+        }).then(r => r.json()),
+        runTest: (params) => {
+            setupTestStreams();
+            return fetch("/api/run-test", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(params)
+            }).then(r => r.json());
+        },
+        killTest: () => fetch("/api/kill-test", { method: "POST" }).then(r => r.json()),
+        getReport: () => fetch("/api/get-report").then(r => r.json()),
+        checkK6: () => fetch("/api/check-k6").then(r => r.json()),
+        startMockServer: () => {
+            setupMockStreams();
+            return fetch("/api/start-mock-server", { method: "POST" }).then(r => r.json());
+        },
+        stopMockServer: () => fetch("/api/stop-mock-server", { method: "POST" }).then(r => r.json()),
+        getMockStatus: () => fetch("/api/get-mock-status").then(r => r.json()),
+        
+        onTestLog: (callback) => {
+            listeners["test-log"].push(callback);
+            setupTestStreams();
+            return () => {
+                listeners["test-log"] = listeners["test-log"].filter(cb => cb !== callback);
+            };
+        },
+        onTestFinished: (callback) => {
+            listeners["test-finished"].push(callback);
+            setupTestStreams();
+            return () => {
+                listeners["test-finished"] = listeners["test-finished"].filter(cb => cb !== callback);
+            };
+        },
+        onMockLog: (callback) => {
+            listeners["mock-log"].push(callback);
+            setupMockStreams();
+            return () => {
+                listeners["mock-log"] = listeners["mock-log"].filter(cb => cb !== callback);
+            };
+        },
+        onMockFinished: (callback) => {
+            listeners["mock-finished"].push(callback);
+            setupMockStreams();
+            return () => {
+                listeners["mock-finished"] = listeners["mock-finished"].filter(cb => cb !== callback);
+            };
+        }
+    };
+}
+
 const navButtons = document.querySelectorAll(".nav-btn");
 const tabContents = document.querySelectorAll(".tab-content");
 

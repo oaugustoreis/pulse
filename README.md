@@ -2,6 +2,8 @@
 
 > A modular, scalable, and TypeScript-native performance engineering framework powered by **K6**.
 
+📚 **[Documentation & User Guide](https://oaugustoreis.github.io/pulse/#/)** (Click to open in new tab)
+
 Pulse brings modern software engineering practices to performance testing. Write structured, maintainable load tests in TypeScript with auto-discovery, reuse business flows, mock dependencies with an integrated mock server, and execute/monitor runs via the CLI or a sleek Desktop GUI.
 
 ---
